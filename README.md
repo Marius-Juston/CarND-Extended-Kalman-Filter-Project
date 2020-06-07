@@ -7,6 +7,27 @@ This project involves the Term 2 Simulator which can be downloaded [here](https:
 
 This repository includes two files that can be used to set up and install [uWebSocketIO](https://github.com/uWebSockets/uWebSockets) for either Linux or Mac systems. For windows you can use either Docker, VMware, or even [Windows 10 Bash on Ubuntu](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/) to install uWebSocketIO. Please see the uWebSocketIO Starter Guide page in the classroom within the EKF Project lesson for the required version and installation scripts.
 
+## Installing uWebSocketIO on Windows using Ubuntu
+
+1. Download Bash from Ubuntu from the Microsoft Store
+2. `cd /mnt/c/Users/<your username>/<path>/<to>/<project dir>`
+3. `./install-linux.sh`
+   * If this does not work and gives you line feed error. 
+     * Install `sudo apt-get install dos2unix`
+     * `dos2unix install-linux.sh`
+   * If you receive a ZLIB not found error:
+     * `sudo apt-get install zlib1g-dev`
+4. Then you can build the program:
+   * Manually:
+      1. `mkdir build && cd build`
+      2. `cmake .. && make`
+   * Using Script:
+      1. `runner.bat`
+         * This can be run in the normal bash terminal in Windows and will still work
+         * This will also start an instance of the program 
+
+## Continue
+
 Once the install for uWebSocketIO is complete, the main program can be built and run by doing the following from the project top directory.
 
 1. mkdir build
