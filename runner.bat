@@ -1,1 +1,1 @@
-bash -c "mkdir build -p && cd build && cmake .. && make"
+bash -c "mkdir build -p && cd build && cmake .. && make && ./ExtendedKF"
