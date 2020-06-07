@@ -103,7 +103,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    * Prediction
    */
 
-  double dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;
+  double dt = (double) (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;
   previous_timestamp_ = measurement_pack.timestamp_;
 
   calculateFMatrix(dt);
