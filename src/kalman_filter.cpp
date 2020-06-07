@@ -1,3 +1,4 @@
+//#include <iostream>
 #include "kalman_filter.h"
 
 using Eigen::MatrixXd;
@@ -72,6 +73,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   newZ << z(0), angle, z(2);
 
   MatrixXd y = newZ - h;
+
+//  std::cout << "H_: " << h(1) << "\tz_: " << z(1) << "\tNewZ_: " << newZ(1) << "\tY_: " << y(1) << std::endl;
 
   MatrixXd H_transposed = H_.transpose();
 
