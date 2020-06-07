@@ -10,7 +10,7 @@
 #ifndef EIGEN_LAZY_H
 #define EIGEN_LAZY_H
 
-namespace Eigen { 
+namespace Eigen {
 
 /** \deprecated it is only used by lazy() which is deprecated
   *
@@ -24,8 +24,7 @@ namespace Eigen {
 template<typename Derived>
 template<unsigned int Added>
 inline const Flagged<Derived, Added, 0>
-MatrixBase<Derived>::marked() const
-{
+MatrixBase<Derived>::marked() const {
   return derived();
 }
 
@@ -40,30 +39,28 @@ MatrixBase<Derived>::marked() const
   */
 template<typename Derived>
 inline const Flagged<Derived, 0, EvalBeforeAssigningBit>
-MatrixBase<Derived>::lazy() const
-{
+MatrixBase<Derived>::lazy() const {
   return derived();
 }
-
 
 /** \internal
   * Overloaded to perform an efficient C += (A*B).lazy() */
 template<typename Derived>
 template<typename ProductDerived, typename Lhs, typename Rhs>
-Derived& MatrixBase<Derived>::operator+=(const Flagged<ProductBase<ProductDerived, Lhs,Rhs>, 0,
-                                                       EvalBeforeAssigningBit>& other)
-{
-  other._expression().derived().addTo(derived()); return derived();
+Derived &MatrixBase<Derived>::operator+=(const Flagged<ProductBase<ProductDerived, Lhs, Rhs>, 0,
+    EvalBeforeAssigningBit> &other) {
+  other._expression().derived().addTo(derived());
+  return derived();
 }
 
 /** \internal
   * Overloaded to perform an efficient C -= (A*B).lazy() */
 template<typename Derived>
 template<typename ProductDerived, typename Lhs, typename Rhs>
-Derived& MatrixBase<Derived>::operator-=(const Flagged<ProductBase<ProductDerived, Lhs,Rhs>, 0,
-                                                       EvalBeforeAssigningBit>& other)
-{
-  other._expression().derived().subTo(derived()); return derived();
+Derived &MatrixBase<Derived>::operator-=(const Flagged<ProductBase<ProductDerived, Lhs, Rhs>, 0,
+    EvalBeforeAssigningBit> &other) {
+  other._expression().derived().subTo(derived());
+  return derived();
 }
 
 } // end namespace Eigen

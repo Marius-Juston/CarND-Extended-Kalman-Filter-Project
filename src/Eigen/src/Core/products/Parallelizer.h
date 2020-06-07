@@ -10,34 +10,28 @@
 #ifndef EIGEN_PARALLELIZER_H
 #define EIGEN_PARALLELIZER_H
 
-namespace Eigen { 
+namespace Eigen {
 
 namespace internal {
 
 /** \internal */
-inline void manage_multi_threading(Action action, int* v)
-{
+inline void manage_multi_threading(Action action, int *v) {
   static EIGEN_UNUSED int m_maxThreads = -1;
 
-  if(action==SetAction)
-  {
-    eigen_internal_assert(v!=0);
+  if (action == SetAction) {
+    eigen_internal_assert(v != 0);
     m_maxThreads = *v;
-  }
-  else if(action==GetAction)
-  {
-    eigen_internal_assert(v!=0);
-    #ifdef EIGEN_HAS_OPENMP
+  } else if (action == GetAction) {
+    eigen_internal_assert(v != 0);
+#ifdef EIGEN_HAS_OPENMP
     if(m_maxThreads>0)
       *v = m_maxThreads;
     else
       *v = omp_get_max_threads();
-    #else
+#else
     *v = 1;
-    #endif
-  }
-  else
-  {
+#endif
+  } else {
     eigen_internal_assert(false);
   }
 }
@@ -45,8 +39,7 @@ inline void manage_multi_threading(Action action, int* v)
 }
 
 /** Must be call first when calling Eigen from multiple threads */
-inline void initParallel()
-{
+inline void initParallel() {
   int nbt;
   internal::manage_multi_threading(GetAction, &nbt);
   std::ptrdiff_t l1, l2;
@@ -55,8 +48,7 @@ inline void initParallel()
 
 /** \returns the max number of threads reserved for Eigen
   * \sa setNbThreads */
-inline int nbThreads()
-{
+inline int nbThreads() {
   int ret;
   internal::manage_multi_threading(GetAction, &ret);
   return ret;
@@ -64,15 +56,14 @@ inline int nbThreads()
 
 /** Sets the max number of threads reserved for Eigen
   * \sa nbThreads */
-inline void setNbThreads(int v)
-{
+inline void setNbThreads(int v) {
   internal::manage_multi_threading(SetAction, &v);
 }
 
 namespace internal {
 
-template<typename Index> struct GemmParallelInfo
-{
+template<typename Index>
+struct GemmParallelInfo {
   GemmParallelInfo() : sync(-1), users(0), rhs_start(0), rhs_length(0) {}
 
   int volatile sync;
@@ -83,8 +74,7 @@ template<typename Index> struct GemmParallelInfo
 };
 
 template<bool Condition, typename Functor, typename Index>
-void parallelize_gemm(const Functor& func, Index rows, Index cols, bool transpose)
-{
+void parallelize_gemm(const Functor &func, Index rows, Index cols, bool transpose) {
   // TODO when EIGEN_USE_BLAS is defined,
   // we should still enable OMP for other scalar types
 #if !(defined (EIGEN_HAS_OPENMP)) || defined (EIGEN_USE_BLAS)
@@ -93,7 +83,7 @@ void parallelize_gemm(const Functor& func, Index rows, Index cols, bool transpos
   // fix to support row-major destination matrices. This whole
   // parallelizer mechanism has to be redisigned anyway.
   EIGEN_UNUSED_VARIABLE(transpose);
-  func(0,rows, 0,cols);
+  func(0, rows, 0, cols);
 #else
 
   // Dynamically check whether we should enable or disable OpenMP.
@@ -127,7 +117,7 @@ void parallelize_gemm(const Functor& func, Index rows, Index cols, bool transpos
 
   GemmParallelInfo<Index>* info = new GemmParallelInfo<Index>[threads];
 
-  #pragma omp parallel num_threads(threads)
+#pragma omp parallel num_threads(threads)
   {
     Index i = omp_get_thread_num();
     // Note that the actual number of threads might be lower than the number of request ones.

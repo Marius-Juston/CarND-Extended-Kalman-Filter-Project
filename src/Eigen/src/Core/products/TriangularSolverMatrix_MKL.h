@@ -147,7 +147,6 @@ EIGEN_MKL_TRSM_R(dcomplex, MKL_Complex16, z)
 EIGEN_MKL_TRSM_R(float, float, s)
 EIGEN_MKL_TRSM_R(scomplex, MKL_Complex8, c)
 
-
 } // end namespace internal
 
 } // end namespace Eigen

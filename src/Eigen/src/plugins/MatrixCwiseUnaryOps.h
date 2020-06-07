@@ -17,7 +17,8 @@
   *
   * \sa cwiseAbs2()
   */
-EIGEN_STRONG_INLINE const CwiseUnaryOp<internal::scalar_abs_op<Scalar>, const Derived>
+EIGEN_STRONG_INLINE const CwiseUnaryOp<internal::scalar_abs_op < Scalar>,
+const Derived>
 cwiseAbs() const { return derived(); }
 
 /** \returns an expression of the coefficient-wise squared absolute value of \c *this
@@ -27,7 +28,8 @@ cwiseAbs() const { return derived(); }
   *
   * \sa cwiseAbs()
   */
-EIGEN_STRONG_INLINE const CwiseUnaryOp<internal::scalar_abs2_op<Scalar>, const Derived>
+EIGEN_STRONG_INLINE const CwiseUnaryOp<internal::scalar_abs2_op < Scalar>,
+const Derived>
 cwiseAbs2() const { return derived(); }
 
 /** \returns an expression of the coefficient-wise square root of *this.

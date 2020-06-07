@@ -6,7 +6,7 @@
 #include "src/Core/util/DisableStupidWarnings.h"
 
 extern "C" {
-  #include <cholmod.h>
+#include <cholmod.h>
 }
 
 /** \ingroup Support_modules
@@ -37,7 +37,6 @@ extern "C" {
 #include "src/misc/SparseSolve.h"
 
 #include "src/CholmodSupport/CholmodSupport.h"
-
 
 #include "src/Core/util/ReenableStupidWarnings.h"
 

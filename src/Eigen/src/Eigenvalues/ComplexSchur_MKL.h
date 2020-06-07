@@ -35,7 +35,7 @@
 
 #include "Eigen/src/Core/util/MKL_support.h"
 
-namespace Eigen { 
+namespace Eigen {
 
 /** \internal Specialization for the data types supported by MKL */
 
@@ -84,9 +84,9 @@ ComplexSchur<Matrix<EIGTYPE, Dynamic, Dynamic, EIGCOLROW> >::compute(const Matri
 }
 
 EIGEN_MKL_SCHUR_COMPLEX(dcomplex, MKL_Complex16, z, Z, ColMajor, LAPACK_COL_MAJOR)
-EIGEN_MKL_SCHUR_COMPLEX(scomplex, MKL_Complex8,  c, C, ColMajor, LAPACK_COL_MAJOR)
+EIGEN_MKL_SCHUR_COMPLEX(scomplex, MKL_Complex8, c, C, ColMajor, LAPACK_COL_MAJOR)
 EIGEN_MKL_SCHUR_COMPLEX(dcomplex, MKL_Complex16, z, Z, RowMajor, LAPACK_ROW_MAJOR)
-EIGEN_MKL_SCHUR_COMPLEX(scomplex, MKL_Complex8,  c, C, RowMajor, LAPACK_ROW_MAJOR)
+EIGEN_MKL_SCHUR_COMPLEX(scomplex, MKL_Complex8, c, C, RowMajor, LAPACK_ROW_MAJOR)
 
 } // end namespace Eigen
 

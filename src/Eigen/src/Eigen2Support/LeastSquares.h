@@ -10,7 +10,7 @@
 #ifndef EIGEN2_LEASTSQUARES_H
 #define EIGEN2_LEASTSQUARES_H
 
-namespace Eigen { 
+namespace Eigen {
 
 /** \ingroup LeastSquares_Module
   *
@@ -85,18 +85,17 @@ template<typename VectorType>
 void linearRegression(int numPoints,
                       VectorType **points,
                       VectorType *result,
-                      int funcOfOthers )
-{
+                      int funcOfOthers) {
   typedef typename VectorType::Scalar Scalar;
   typedef Hyperplane<Scalar, VectorType::SizeAtCompileTime> HyperplaneType;
   const int size = points[0]->size();
   result->resize(size);
   HyperplaneType h(size);
   fitHyperplane(numPoints, points, &h);
-  for(int i = 0; i < funcOfOthers; i++)
-    result->coeffRef(i) = - h.coeffs()[i] / h.coeffs()[funcOfOthers];
-  for(int i = funcOfOthers; i < size; i++)
-    result->coeffRef(i) = - h.coeffs()[i+1] / h.coeffs()[funcOfOthers];
+  for (int i = 0; i < funcOfOthers; i++)
+    result->coeffRef(i) = -h.coeffs()[i] / h.coeffs()[funcOfOthers];
+  for (int i = funcOfOthers; i < size; i++)
+    result->coeffRef(i) = -h.coeffs()[i + 1] / h.coeffs()[funcOfOthers];
 }
 
 /** \ingroup LeastSquares_Module
@@ -130,25 +129,23 @@ template<typename VectorType, typename HyperplaneType>
 void fitHyperplane(int numPoints,
                    VectorType **points,
                    HyperplaneType *result,
-                   typename NumTraits<typename VectorType::Scalar>::Real* soundness = 0)
-{
+                   typename NumTraits<typename VectorType::Scalar>::Real *soundness = 0) {
   typedef typename VectorType::Scalar Scalar;
-  typedef Matrix<Scalar,VectorType::SizeAtCompileTime,VectorType::SizeAtCompileTime> CovMatrixType;
+  typedef Matrix<Scalar, VectorType::SizeAtCompileTime, VectorType::SizeAtCompileTime> CovMatrixType;
   EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorType)
   ei_assert(numPoints >= 1);
   int size = points[0]->size();
-  ei_assert(size+1 == result->coeffs().size());
+  ei_assert(size + 1 == result->coeffs().size());
 
   // compute the mean of the data
   VectorType mean = VectorType::Zero(size);
-  for(int i = 0; i < numPoints; ++i)
+  for (int i = 0; i < numPoints; ++i)
     mean += *(points[i]);
   mean /= numPoints;
 
   // compute the covariance matrix
   CovMatrixType covMat = CovMatrixType::Zero(size, size);
-  for(int i = 0; i < numPoints; ++i)
-  {
+  for (int i = 0; i < numPoints; ++i) {
     VectorType diff = (*(points[i]) - mean).conjugate();
     covMat += diff * diff.adjoint();
   }
@@ -157,11 +154,11 @@ void fitHyperplane(int numPoints,
   SelfAdjointEigenSolver<CovMatrixType> eig(covMat);
   result->normal() = eig.eigenvectors().col(0);
   if (soundness)
-    *soundness = eig.eigenvalues().coeff(0)/eig.eigenvalues().coeff(1);
+    *soundness = eig.eigenvalues().coeff(0) / eig.eigenvalues().coeff(1);
 
   // let's compute the constant coefficient such that the
   // plane pass trough the mean point:
-  result->offset() = - (result->normal().cwise()* mean).sum();
+  result->offset() = -(result->normal().cwise() * mean).sum();
 }
 
 } // end namespace Eigen

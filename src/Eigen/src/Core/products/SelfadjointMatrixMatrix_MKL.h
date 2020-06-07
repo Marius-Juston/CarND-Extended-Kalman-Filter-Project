@@ -33,7 +33,7 @@
 #ifndef EIGEN_SELFADJOINT_MATRIX_MATRIX_MKL_H
 #define EIGEN_SELFADJOINT_MATRIX_MATRIX_MKL_H
 
-namespace Eigen { 
+namespace Eigen {
 
 namespace internal {
 
@@ -90,7 +90,6 @@ struct product_selfadjoint_matrix<EIGTYPE,Index,LhsStorageOrder,true,ConjugateLh
 \
   } \
 };
-
 
 #define EIGEN_MKL_HEMM_L(EIGTYPE, MKLTYPE, EIGPREFIX, MKLPREFIX) \
 template <typename Index, \
@@ -216,7 +215,6 @@ struct product_selfadjoint_matrix<EIGTYPE,Index,LhsStorageOrder,false,ConjugateL
 \
   } \
 };
-
 
 #define EIGEN_MKL_HEMM_R(EIGTYPE, MKLTYPE, EIGPREFIX, MKLPREFIX) \
 template <typename Index, \

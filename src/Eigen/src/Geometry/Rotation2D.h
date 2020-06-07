@@ -10,7 +10,7 @@
 #ifndef EIGEN_ROTATION2D_H
 #define EIGEN_ROTATION2D_H
 
-namespace Eigen { 
+namespace Eigen {
 
 /** \geometry_module \ingroup Geometry_Module
   *
@@ -31,36 +31,35 @@ namespace Eigen {
 
 namespace internal {
 
-template<typename _Scalar> struct traits<Rotation2D<_Scalar> >
-{
-  typedef _Scalar Scalar;
+template<typename _Scalar>
+struct traits<Rotation2D < _Scalar> > {
+typedef _Scalar Scalar;
 };
 } // end namespace internal
 
 template<typename _Scalar>
-class Rotation2D : public RotationBase<Rotation2D<_Scalar>,2>
-{
-  typedef RotationBase<Rotation2D<_Scalar>,2> Base;
+class Rotation2D : public RotationBase<Rotation2D<_Scalar>, 2> {
+  typedef RotationBase<Rotation2D<_Scalar>, 2> Base;
 
-public:
+ public:
 
   using Base::operator*;
 
   enum { Dim = 2 };
   /** the scalar type of the coefficients */
   typedef _Scalar Scalar;
-  typedef Matrix<Scalar,2,1> Vector2;
-  typedef Matrix<Scalar,2,2> Matrix2;
+  typedef Matrix<Scalar, 2, 1> Vector2;
+  typedef Matrix<Scalar, 2, 2> Matrix2;
 
-protected:
+ protected:
 
   Scalar m_angle;
 
-public:
+ public:
 
   /** Construct a 2D counter clock wise rotation from the angle \a a in radian. */
-  inline Rotation2D(const Scalar& a) : m_angle(a) {}
-  
+  inline Rotation2D(const Scalar &a) : m_angle(a) {}
+
   /** Default constructor wihtout initialization. The represented rotation is undefined. */
   Rotation2D() {}
 
@@ -68,32 +67,33 @@ public:
   inline Scalar angle() const { return m_angle; }
 
   /** \returns a read-write reference to the rotation angle */
-  inline Scalar& angle() { return m_angle; }
+  inline Scalar &angle() { return m_angle; }
 
   /** \returns the inverse rotation */
   inline Rotation2D inverse() const { return -m_angle; }
 
   /** Concatenates two rotations */
-  inline Rotation2D operator*(const Rotation2D& other) const
-  { return m_angle + other.m_angle; }
+  inline Rotation2D operator*(const Rotation2D &other) const { return m_angle + other.m_angle; }
 
   /** Concatenates two rotations */
-  inline Rotation2D& operator*=(const Rotation2D& other)
-  { m_angle += other.m_angle; return *this; }
+  inline Rotation2D &operator*=(const Rotation2D &other) {
+    m_angle += other.m_angle;
+    return *this;
+  }
 
   /** Applies the rotation to a 2D vector */
-  Vector2 operator* (const Vector2& vec) const
-  { return toRotationMatrix() * vec; }
-  
+  Vector2 operator*(const Vector2 &vec) const { return toRotationMatrix() * vec; }
+
   template<typename Derived>
-  Rotation2D& fromRotationMatrix(const MatrixBase<Derived>& m);
+  Rotation2D &fromRotationMatrix(const MatrixBase<Derived> &m);
   Matrix2 toRotationMatrix() const;
 
   /** \returns the spherical interpolation between \c *this and \a other using
     * parameter \a t. It is in fact equivalent to a linear interpolation.
     */
-  inline Rotation2D slerp(const Scalar& t, const Rotation2D& other) const
-  { return m_angle * (1-t) + other.angle() * t; }
+  inline Rotation2D slerp(const Scalar &t, const Rotation2D &other) const {
+    return m_angle * (1 - t) + other.angle() * t;
+  }
 
   /** \returns \c *this with scalar type casted to \a NewScalarType
     *
@@ -101,13 +101,15 @@ public:
     * then this function smartly returns a const reference to \c *this.
     */
   template<typename NewScalarType>
-  inline typename internal::cast_return_type<Rotation2D,Rotation2D<NewScalarType> >::type cast() const
-  { return typename internal::cast_return_type<Rotation2D,Rotation2D<NewScalarType> >::type(*this); }
+  inline typename internal::cast_return_type<Rotation2D,
+                                             Rotation2D<NewScalarType> >::type cast() const {
+    return typename internal::cast_return_type<Rotation2D,
+                                               Rotation2D<NewScalarType> >::type(*this);
+  }
 
   /** Copy constructor with scalar type conversion */
   template<typename OtherScalarType>
-  inline explicit Rotation2D(const Rotation2D<OtherScalarType>& other)
-  {
+  inline explicit Rotation2D(const Rotation2D<OtherScalarType> &other) {
     m_angle = Scalar(other.angle());
   }
 
@@ -117,8 +119,12 @@ public:
     * determined by \a prec.
     *
     * \sa MatrixBase::isApprox() */
-  bool isApprox(const Rotation2D& other, const typename NumTraits<Scalar>::Real& prec = NumTraits<Scalar>::dummy_precision()) const
-  { return internal::isApprox(m_angle,other.m_angle, prec); }
+  bool isApprox(const Rotation2D &other,
+                const typename NumTraits<Scalar>::Real &prec = NumTraits<Scalar>::dummy_precision()) const {
+    return internal::isApprox(m_angle,
+                              other.m_angle,
+                              prec);
+  }
 };
 
 /** \ingroup Geometry_Module
@@ -134,11 +140,11 @@ typedef Rotation2D<double> Rotation2Dd;
   */
 template<typename Scalar>
 template<typename Derived>
-Rotation2D<Scalar>& Rotation2D<Scalar>::fromRotationMatrix(const MatrixBase<Derived>& mat)
-{
+Rotation2D<Scalar> &Rotation2D<Scalar>::fromRotationMatrix(const MatrixBase<Derived> &mat) {
   using std::atan2;
-  EIGEN_STATIC_ASSERT(Derived::RowsAtCompileTime==2 && Derived::ColsAtCompileTime==2,YOU_MADE_A_PROGRAMMING_MISTAKE)
-  m_angle = atan2(mat.coeff(1,0), mat.coeff(0,0));
+  EIGEN_STATIC_ASSERT(Derived::RowsAtCompileTime == 2 && Derived::ColsAtCompileTime == 2,
+                      YOU_MADE_A_PROGRAMMING_MISTAKE)
+  m_angle = atan2(mat.coeff(1, 0), mat.coeff(0, 0));
   return *this;
 }
 
@@ -146,8 +152,7 @@ Rotation2D<Scalar>& Rotation2D<Scalar>::fromRotationMatrix(const MatrixBase<Deri
   */
 template<typename Scalar>
 typename Rotation2D<Scalar>::Matrix2
-Rotation2D<Scalar>::toRotationMatrix(void) const
-{
+Rotation2D<Scalar>::toRotationMatrix(void) const {
   using std::sin;
   using std::cos;
   Scalar sinA = sin(m_angle);

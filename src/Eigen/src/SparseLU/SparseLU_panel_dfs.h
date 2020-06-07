@@ -33,147 +33,136 @@
 namespace Eigen {
 
 namespace internal {
-  
+
 template<typename IndexVector>
-struct panel_dfs_traits
-{
+struct panel_dfs_traits {
   typedef typename IndexVector::Scalar Index;
-  panel_dfs_traits(Index jcol, Index* marker)
-    : m_jcol(jcol), m_marker(marker)
-  {}
-  bool update_segrep(Index krep, Index jj)
-  {
-    if(m_marker[krep]<m_jcol)
-    {
-      m_marker[krep] = jj; 
+  panel_dfs_traits(Index jcol, Index *marker)
+      : m_jcol(jcol), m_marker(marker) {}
+  bool update_segrep(Index krep, Index jj) {
+    if (m_marker[krep] < m_jcol) {
+      m_marker[krep] = jj;
       return true;
     }
     return false;
   }
-  void mem_expand(IndexVector& /*glu.lsub*/, Index /*nextl*/, Index /*chmark*/) {}
+  void mem_expand(IndexVector & /*glu.lsub*/, Index /*nextl*/, Index /*chmark*/) {}
   enum { ExpandMem = false };
   Index m_jcol;
-  Index* m_marker;
+  Index *m_marker;
 };
 
+template<typename Scalar, typename Index>
+template<typename Traits>
+void SparseLUImpl<Scalar, Index>::dfs_kernel(const Index jj,
+                                             IndexVector &perm_r,
+                                             Index &nseg,
+                                             IndexVector &panel_lsub,
+                                             IndexVector &segrep,
+                                             Ref<IndexVector> repfnz_col,
+                                             IndexVector &xprune,
+                                             Ref<IndexVector> marker,
+                                             IndexVector &parent,
+                                             IndexVector &xplore,
+                                             GlobalLU_t &glu,
+                                             Index &nextl_col,
+                                             Index krow,
+                                             Traits &traits
+) {
 
-template <typename Scalar, typename Index>
-template <typename Traits>
-void SparseLUImpl<Scalar,Index>::dfs_kernel(const Index jj, IndexVector& perm_r,
-                   Index& nseg, IndexVector& panel_lsub, IndexVector& segrep,
-                   Ref<IndexVector> repfnz_col, IndexVector& xprune, Ref<IndexVector> marker, IndexVector& parent,
-                   IndexVector& xplore, GlobalLU_t& glu,
-                   Index& nextl_col, Index krow, Traits& traits
-                  )
-{
-  
   Index kmark = marker(krow);
-      
+
   // For each unmarked krow of jj
-  marker(krow) = jj; 
-  Index kperm = perm_r(krow); 
-  if (kperm == emptyIdxLU ) {
+  marker(krow) = jj;
+  Index kperm = perm_r(krow);
+  if (kperm == emptyIdxLU) {
     // krow is in L : place it in structure of L(*, jj)
     panel_lsub(nextl_col++) = krow;  // krow is indexed into A
-    
+
     traits.mem_expand(panel_lsub, nextl_col, kmark);
-  }
-  else 
-  {
+  } else {
     // krow is in U : if its supernode-representative krep
     // has been explored, update repfnz(*)
     // krep = supernode representative of the current row
-    Index krep = glu.xsup(glu.supno(kperm)+1) - 1; 
+    Index krep = glu.xsup(glu.supno(kperm) + 1) - 1;
     // First nonzero element in the current column:
-    Index myfnz = repfnz_col(krep); 
-    
-    if (myfnz != emptyIdxLU )
-    {
+    Index myfnz = repfnz_col(krep);
+
+    if (myfnz != emptyIdxLU) {
       // Representative visited before
-      if (myfnz > kperm ) repfnz_col(krep) = kperm; 
-      
-    }
-    else 
-    {
+      if (myfnz > kperm) repfnz_col(krep) = kperm;
+
+    } else {
       // Otherwise, perform dfs starting at krep
-      Index oldrep = emptyIdxLU; 
-      parent(krep) = oldrep; 
-      repfnz_col(krep) = kperm; 
-      Index xdfs =  glu.xlsub(krep); 
-      Index maxdfs = xprune(krep); 
-      
+      Index oldrep = emptyIdxLU;
+      parent(krep) = oldrep;
+      repfnz_col(krep) = kperm;
+      Index xdfs = glu.xlsub(krep);
+      Index maxdfs = xprune(krep);
+
       Index kpar;
-      do 
-      {
+      do {
         // For each unmarked kchild of krep
-        while (xdfs < maxdfs) 
-        {
-          Index kchild = glu.lsub(xdfs); 
-          xdfs++; 
-          Index chmark = marker(kchild); 
-          
-          if (chmark != jj ) 
-          {
-            marker(kchild) = jj; 
-            Index chperm = perm_r(kchild); 
-            
-            if (chperm == emptyIdxLU) 
-            {
+        while (xdfs < maxdfs) {
+          Index kchild = glu.lsub(xdfs);
+          xdfs++;
+          Index chmark = marker(kchild);
+
+          if (chmark != jj) {
+            marker(kchild) = jj;
+            Index chperm = perm_r(kchild);
+
+            if (chperm == emptyIdxLU) {
               // case kchild is in L: place it in L(*, j)
               panel_lsub(nextl_col++) = kchild;
               traits.mem_expand(panel_lsub, nextl_col, chmark);
-            }
-            else
-            {
+            } else {
               // case kchild is in U :
               // chrep = its supernode-rep. If its rep has been explored, 
               // update its repfnz(*)
-              Index chrep = glu.xsup(glu.supno(chperm)+1) - 1; 
-              myfnz = repfnz_col(chrep); 
-              
-              if (myfnz != emptyIdxLU) 
-              { // Visited before 
-                if (myfnz > chperm) 
-                  repfnz_col(chrep) = chperm; 
-              }
-              else 
-              { // Cont. dfs at snode-rep of kchild
-                xplore(krep) = xdfs; 
-                oldrep = krep; 
+              Index chrep = glu.xsup(glu.supno(chperm) + 1) - 1;
+              myfnz = repfnz_col(chrep);
+
+              if (myfnz != emptyIdxLU) { // Visited before
+                if (myfnz > chperm)
+                  repfnz_col(chrep) = chperm;
+              } else { // Cont. dfs at snode-rep of kchild
+                xplore(krep) = xdfs;
+                oldrep = krep;
                 krep = chrep; // Go deeper down G(L)
-                parent(krep) = oldrep; 
-                repfnz_col(krep) = chperm; 
-                xdfs = glu.xlsub(krep); 
-                maxdfs = xprune(krep); 
-                
+                parent(krep) = oldrep;
+                repfnz_col(krep) = chperm;
+                xdfs = glu.xlsub(krep);
+                maxdfs = xprune(krep);
+
               } // end if myfnz != -1
             } // end if chperm == -1 
-                
+
           } // end if chmark !=jj
         } // end while xdfs < maxdfs
-        
+
         // krow has no more unexplored nbrs :
         //    Place snode-rep krep in postorder DFS, if this 
         //    segment is seen for the first time. (Note that 
         //    "repfnz(krep)" may change later.)
         //    Baktrack dfs to its parent
-        if(traits.update_segrep(krep,jj))
-        //if (marker1(krep) < jcol )
+        if (traits.update_segrep(krep, jj))
+          //if (marker1(krep) < jcol )
         {
-          segrep(nseg) = krep; 
-          ++nseg; 
+          segrep(nseg) = krep;
+          ++nseg;
           //marker1(krep) = jj; 
         }
-        
+
         kpar = parent(krep); // Pop recursion, mimic recursion 
-        if (kpar == emptyIdxLU) 
+        if (kpar == emptyIdxLU)
           break; // dfs done 
-        krep = kpar; 
-        xdfs = xplore(krep); 
-        maxdfs = xprune(krep); 
+        krep = kpar;
+        xdfs = xplore(krep);
+        maxdfs = xprune(krep);
 
       } while (kpar != emptyIdxLU); // Do until empty stack 
-      
+
     } // end if (myfnz = -1)
 
   } // end if (kperm == -1)   
@@ -215,40 +204,51 @@ void SparseLUImpl<Scalar,Index>::dfs_kernel(const Index jj, IndexVector& perm_r,
  * 
  */
 
-template <typename Scalar, typename Index>
-void SparseLUImpl<Scalar,Index>::panel_dfs(const Index m, const Index w, const Index jcol, MatrixType& A, IndexVector& perm_r, Index& nseg, ScalarVector& dense, IndexVector& panel_lsub, IndexVector& segrep, IndexVector& repfnz, IndexVector& xprune, IndexVector& marker, IndexVector& parent, IndexVector& xplore, GlobalLU_t& glu)
-{
+template<typename Scalar, typename Index>
+void SparseLUImpl<Scalar, Index>::panel_dfs(const Index m,
+                                            const Index w,
+                                            const Index jcol,
+                                            MatrixType &A,
+                                            IndexVector &perm_r,
+                                            Index &nseg,
+                                            ScalarVector &dense,
+                                            IndexVector &panel_lsub,
+                                            IndexVector &segrep,
+                                            IndexVector &repfnz,
+                                            IndexVector &xprune,
+                                            IndexVector &marker,
+                                            IndexVector &parent,
+                                            IndexVector &xplore,
+                                            GlobalLU_t &glu) {
   Index nextl_col; // Next available position in panel_lsub[*,jj] 
-  
+
   // Initialize pointers 
-  VectorBlock<IndexVector> marker1(marker, m, m); 
-  nseg = 0; 
-  
+  VectorBlock<IndexVector> marker1(marker, m, m);
+  nseg = 0;
+
   panel_dfs_traits<IndexVector> traits(jcol, marker1.data());
-  
+
   // For each column in the panel 
-  for (Index jj = jcol; jj < jcol + w; jj++) 
-  {
-    nextl_col = (jj - jcol) * m; 
-    
+  for (Index jj = jcol; jj < jcol + w; jj++) {
+    nextl_col = (jj - jcol) * m;
+
     VectorBlock<IndexVector> repfnz_col(repfnz, nextl_col, m); // First nonzero location in each row
-    VectorBlock<ScalarVector> dense_col(dense,nextl_col, m); // Accumulate a column vector here
-    
-    
+    VectorBlock<ScalarVector> dense_col(dense, nextl_col, m); // Accumulate a column vector here
+
+
     // For each nnz in A[*, jj] do depth first search
-    for (typename MatrixType::InnerIterator it(A, jj); it; ++it)
-    {
-      Index krow = it.row(); 
+    for (typename MatrixType::InnerIterator it(A, jj); it; ++it) {
+      Index krow = it.row();
       dense_col(krow) = it.value();
-      
-      Index kmark = marker(krow); 
-      if (kmark == jj) 
+
+      Index kmark = marker(krow);
+      if (kmark == jj)
         continue; // krow visited before, go to the next nonzero
-      
+
       dfs_kernel(jj, perm_r, nseg, panel_lsub, segrep, repfnz_col, xprune, marker, parent,
-                   xplore, glu, nextl_col, krow, traits);
+                 xplore, glu, nextl_col, krow, traits);
     }// end for nonzeros in column jj
-    
+
   } // end for column jj
 }
 

@@ -65,17 +65,15 @@ namespace std {
       return *this;  \
     }
 
-  template<typename T>
-  class vector<T,EIGEN_ALIGNED_ALLOCATOR<T> >
+template<typename T>
+class vector<T, EIGEN_ALIGNED_ALLOCATOR<T> >
     : public vector<EIGEN_WORKAROUND_MSVC_STL_SUPPORT(T),
-                    Eigen::aligned_allocator_indirection<EIGEN_WORKAROUND_MSVC_STL_SUPPORT(T)> >
-{
+                    Eigen::aligned_allocator_indirection<EIGEN_WORKAROUND_MSVC_STL_SUPPORT(T)> > {
   typedef vector<EIGEN_WORKAROUND_MSVC_STL_SUPPORT(T),
                  Eigen::aligned_allocator_indirection<EIGEN_WORKAROUND_MSVC_STL_SUPPORT(T)> > vector_base;
-  EIGEN_STD_VECTOR_SPECIALIZATION_BODY
+ EIGEN_STD_VECTOR_SPECIALIZATION_BODY
 
-  void resize(size_type new_size)
-  { resize(new_size, T()); }
+  void resize(size_type new_size) { resize(new_size, T()); }
 
 #if defined(_VECTOR_)
   // workaround MSVC std::vector implementation
@@ -93,14 +91,14 @@ namespace std {
   { return vector_base::insert(position,x); }
   void insert(const_iterator position, size_type new_size, const value_type& x)
   { vector_base::insert(position, new_size, x); }
-#elif defined(_GLIBCXX_VECTOR) && (!(EIGEN_GNUC_AT_LEAST(4,1)))
+#elif defined(_GLIBCXX_VECTOR) && (!(EIGEN_GNUC_AT_LEAST(4, 1)))
   /* Note that before gcc-4.1 we already have: std::vector::resize(size_type,const T&).
    * However, this specialization is still needed to make the above EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION trick to work. */
   void resize(size_type new_size, const value_type& x)
   {
     vector_base::resize(new_size,x);
   }
-#elif defined(_GLIBCXX_VECTOR) && EIGEN_GNUC_AT_LEAST(4,2)
+#elif defined(_GLIBCXX_VECTOR) && EIGEN_GNUC_AT_LEAST(4, 2)
   // workaround GCC std::vector implementation
   void resize(size_type new_size, const value_type& x)
   {
@@ -112,15 +110,14 @@ namespace std {
 #else
   // either GCC 4.1 or non-GCC
   // default implementation which should always work.
-  void resize(size_type new_size, const value_type& x)
-  {
+  void resize(size_type new_size, const value_type &x) {
     if (new_size < vector_base::size())
       vector_base::erase(vector_base::begin() + new_size, vector_base::end());
     else if (new_size > vector_base::size())
       vector_base::insert(vector_base::end(), new_size - vector_base::size(), x);
   }
 #endif
-  };
+};
 }
 
 #endif // EIGEN_STDVECTOR_H

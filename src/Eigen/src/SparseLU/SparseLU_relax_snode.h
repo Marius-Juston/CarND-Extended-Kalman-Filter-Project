@@ -31,7 +31,7 @@
 namespace Eigen {
 
 namespace internal {
- 
+
 /** 
  * \brief Identify the initial relaxed supernodes
  * 
@@ -43,29 +43,29 @@ namespace internal {
  * \param descendants Number of descendants of each node in the etree
  * \param relax_end last column in a supernode
  */
-template <typename Scalar, typename Index>
-void SparseLUImpl<Scalar,Index>::relax_snode (const Index n, IndexVector& et, const Index relax_columns, IndexVector& descendants, IndexVector& relax_end)
-{
-  
+template<typename Scalar, typename Index>
+void SparseLUImpl<Scalar, Index>::relax_snode(const Index n,
+                                              IndexVector &et,
+                                              const Index relax_columns,
+                                              IndexVector &descendants,
+                                              IndexVector &relax_end) {
+
   // compute the number of descendants of each node in the etree
-  Index j, parent; 
+  Index j, parent;
   relax_end.setConstant(emptyIdxLU);
   descendants.setZero();
-  for (j = 0; j < n; j++) 
-  {
+  for (j = 0; j < n; j++) {
     parent = et(j);
     if (parent != n) // not the dummy root
       descendants(parent) += descendants(j) + 1;
   }
   // Identify the relaxed supernodes by postorder traversal of the etree
   Index snode_start; // beginning of a snode 
-  for (j = 0; j < n; )
-  {
+  for (j = 0; j < n;) {
     parent = et(j);
-    snode_start = j; 
-    while ( parent != n && descendants(parent) < relax_columns ) 
-    {
-      j = parent; 
+    snode_start = j;
+    while (parent != n && descendants(parent) < relax_columns) {
+      j = parent;
       parent = et(j);
     }
     // Found a supernode in postordered etree, j is the last column 
@@ -74,7 +74,7 @@ void SparseLUImpl<Scalar,Index>::relax_snode (const Index n, IndexVector& et, co
     // Search for a new leaf
     while (descendants(j) != 0 && j < n) j++;
   } // End postorder traversal of the etree
-  
+
 }
 
 } // end namespace internal

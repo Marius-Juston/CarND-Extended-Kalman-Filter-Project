@@ -10,54 +10,47 @@
 #ifndef EIGEN_STABLENORM_H
 #define EIGEN_STABLENORM_H
 
-namespace Eigen { 
+namespace Eigen {
 
 namespace internal {
 
 template<typename ExpressionType, typename Scalar>
-inline void stable_norm_kernel(const ExpressionType& bl, Scalar& ssq, Scalar& scale, Scalar& invScale)
-{
+inline void stable_norm_kernel(const ExpressionType &bl, Scalar &ssq, Scalar &scale, Scalar &invScale) {
   using std::max;
   Scalar maxCoeff = bl.cwiseAbs().maxCoeff();
-  
-  if (maxCoeff>scale)
-  {
-    ssq = ssq * numext::abs2(scale/maxCoeff);
-    Scalar tmp = Scalar(1)/maxCoeff;
-    if(tmp > NumTraits<Scalar>::highest())
-    {
+
+  if (maxCoeff > scale) {
+    ssq = ssq * numext::abs2(scale / maxCoeff);
+    Scalar tmp = Scalar(1) / maxCoeff;
+    if (tmp > NumTraits<Scalar>::highest()) {
       invScale = NumTraits<Scalar>::highest();
-      scale = Scalar(1)/invScale;
-    }
-    else
-    {
+      scale = Scalar(1) / invScale;
+    } else {
       scale = maxCoeff;
       invScale = tmp;
     }
   }
-  
+
   // TODO if the maxCoeff is much much smaller than the current scale,
   // then we can neglect this sub vector
-  if(scale>Scalar(0)) // if scale==0, then bl is 0 
-    ssq += (bl*invScale).squaredNorm();
+  if (scale > Scalar(0)) // if scale==0, then bl is 0
+    ssq += (bl * invScale).squaredNorm();
 }
 
 template<typename Derived>
 inline typename NumTraits<typename traits<Derived>::Scalar>::Real
-blueNorm_impl(const EigenBase<Derived>& _vec)
-{
-  typedef typename Derived::RealScalar RealScalar;  
+blueNorm_impl(const EigenBase<Derived> &_vec) {
+  typedef typename Derived::RealScalar RealScalar;
   typedef typename Derived::Index Index;
   using std::pow;
   using std::min;
   using std::max;
   using std::sqrt;
   using std::abs;
-  const Derived& vec(_vec.derived());
+  const Derived &vec(_vec.derived());
   static bool initialized = false;
   static RealScalar b1, b2, s1m, s2m, overfl, rbig, relerr;
-  if(!initialized)
-  {
+  if (!initialized) {
     int ibeta, it, iemin, iemax, iexp;
     RealScalar eps;
     // This program calculates the machine-dependent constants
@@ -69,24 +62,24 @@ blueNorm_impl(const EigenBase<Derived>& _vec)
     // are used. For any specific computer, each of the assignment
     // statements can be replaced
     ibeta = std::numeric_limits<RealScalar>::radix;                 // base for floating-point numbers
-    it    = std::numeric_limits<RealScalar>::digits;                // number of base-beta digits in mantissa
+    it = std::numeric_limits<RealScalar>::digits;                // number of base-beta digits in mantissa
     iemin = std::numeric_limits<RealScalar>::min_exponent;          // minimum exponent
     iemax = std::numeric_limits<RealScalar>::max_exponent;          // maximum exponent
-    rbig  = (std::numeric_limits<RealScalar>::max)();               // largest floating-point number
+    rbig = (std::numeric_limits<RealScalar>::max)();               // largest floating-point number
 
-    iexp  = -((1-iemin)/2);
-    b1    = RealScalar(pow(RealScalar(ibeta),RealScalar(iexp)));    // lower boundary of midrange
-    iexp  = (iemax + 1 - it)/2;
-    b2    = RealScalar(pow(RealScalar(ibeta),RealScalar(iexp)));    // upper boundary of midrange
+    iexp = -((1 - iemin) / 2);
+    b1 = RealScalar(pow(RealScalar(ibeta), RealScalar(iexp)));    // lower boundary of midrange
+    iexp = (iemax + 1 - it) / 2;
+    b2 = RealScalar(pow(RealScalar(ibeta), RealScalar(iexp)));    // upper boundary of midrange
 
-    iexp  = (2-iemin)/2;
-    s1m   = RealScalar(pow(RealScalar(ibeta),RealScalar(iexp)));    // scaling factor for lower range
-    iexp  = - ((iemax+it)/2);
-    s2m   = RealScalar(pow(RealScalar(ibeta),RealScalar(iexp)));    // scaling factor for upper range
+    iexp = (2 - iemin) / 2;
+    s1m = RealScalar(pow(RealScalar(ibeta), RealScalar(iexp)));    // scaling factor for lower range
+    iexp = -((iemax + it) / 2);
+    s2m = RealScalar(pow(RealScalar(ibeta), RealScalar(iexp)));    // scaling factor for upper range
 
-    overfl  = rbig*s2m;                                             // overflow boundary for abig
-    eps     = RealScalar(pow(double(ibeta), 1-it));
-    relerr  = sqrt(eps);                                            // tolerance for neglecting asml
+    overfl = rbig * s2m;                                             // overflow boundary for abig
+    eps = RealScalar(pow(double(ibeta), 1 - it));
+    relerr = sqrt(eps);                                            // tolerance for neglecting asml
     initialized = true;
   }
   Index n = vec.size();
@@ -94,46 +87,36 @@ blueNorm_impl(const EigenBase<Derived>& _vec)
   RealScalar asml = RealScalar(0);
   RealScalar amed = RealScalar(0);
   RealScalar abig = RealScalar(0);
-  for(typename Derived::InnerIterator it(vec, 0); it; ++it)
-  {
+  for (typename Derived::InnerIterator it(vec, 0); it; ++it) {
     RealScalar ax = abs(it.value());
-    if(ax > ab2)     abig += numext::abs2(ax*s2m);
-    else if(ax < b1) asml += numext::abs2(ax*s1m);
-    else             amed += numext::abs2(ax);
+    if (ax > ab2) abig += numext::abs2(ax * s2m);
+    else if (ax < b1) asml += numext::abs2(ax * s1m);
+    else amed += numext::abs2(ax);
   }
-  if(abig > RealScalar(0))
-  {
+  if (abig > RealScalar(0)) {
     abig = sqrt(abig);
-    if(abig > overfl)
-    {
+    if (abig > overfl) {
       return rbig;
     }
-    if(amed > RealScalar(0))
-    {
-      abig = abig/s2m;
+    if (amed > RealScalar(0)) {
+      abig = abig / s2m;
       amed = sqrt(amed);
-    }
-    else
-      return abig/s2m;
-  }
-  else if(asml > RealScalar(0))
-  {
-    if (amed > RealScalar(0))
-    {
+    } else
+      return abig / s2m;
+  } else if (asml > RealScalar(0)) {
+    if (amed > RealScalar(0)) {
       abig = sqrt(amed);
       amed = sqrt(asml) / s1m;
-    }
-    else
-      return sqrt(asml)/s1m;
-  }
-  else
+    } else
+      return sqrt(asml) / s1m;
+  } else
     return sqrt(amed);
   asml = (min)(abig, amed);
   abig = (max)(abig, amed);
-  if(asml <= abig*relerr)
+  if (asml <= abig * relerr)
     return abig;
   else
-    return abig * sqrt(RealScalar(1) + numext::abs2(asml/abig));
+    return abig * sqrt(RealScalar(1) + numext::abs2(asml / abig));
 }
 
 } // end namespace internal
@@ -150,8 +133,7 @@ blueNorm_impl(const EigenBase<Derived>& _vec)
   */
 template<typename Derived>
 inline typename NumTraits<typename internal::traits<Derived>::Scalar>::Real
-MatrixBase<Derived>::stableNorm() const
-{
+MatrixBase<Derived>::stableNorm() const {
   using std::min;
   using std::sqrt;
   const Index blockSize = 4096;
@@ -159,14 +141,17 @@ MatrixBase<Derived>::stableNorm() const
   RealScalar invScale(1);
   RealScalar ssq(0); // sum of square
   enum {
-    Alignment = (int(Flags)&DirectAccessBit) || (int(Flags)&AlignedBit) ? 1 : 0
+    Alignment = (int(Flags) & DirectAccessBit) || (int(Flags) & AlignedBit) ? 1 : 0
   };
   Index n = size();
   Index bi = internal::first_aligned(derived());
-  if (bi>0)
+  if (bi > 0)
     internal::stable_norm_kernel(this->head(bi), ssq, scale, invScale);
-  for (; bi<n; bi+=blockSize)
-    internal::stable_norm_kernel(this->segment(bi,(min)(blockSize, n - bi)).template forceAlignedAccessIf<Alignment>(), ssq, scale, invScale);
+  for (; bi < n; bi += blockSize)
+    internal::stable_norm_kernel(this->segment(bi, (min)(blockSize, n - bi)).template forceAlignedAccessIf<Alignment>(),
+                                 ssq,
+                                 scale,
+                                 invScale);
   return scale * sqrt(ssq);
 }
 
@@ -181,8 +166,7 @@ MatrixBase<Derived>::stableNorm() const
   */
 template<typename Derived>
 inline typename NumTraits<typename internal::traits<Derived>::Scalar>::Real
-MatrixBase<Derived>::blueNorm() const
-{
+MatrixBase<Derived>::blueNorm() const {
   return internal::blueNorm_impl(*this);
 }
 
@@ -193,8 +177,7 @@ MatrixBase<Derived>::blueNorm() const
   */
 template<typename Derived>
 inline typename NumTraits<typename internal::traits<Derived>::Scalar>::Real
-MatrixBase<Derived>::hypotNorm() const
-{
+MatrixBase<Derived>::hypotNorm() const {
   return this->cwiseAbs().redux(internal::scalar_hypot_op<RealScalar>());
 }
 

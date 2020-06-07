@@ -5,7 +5,7 @@
 
 class MeasurementPackage {
  public:
-  enum SensorType{
+  enum SensorType {
     LASER,
     RADAR
   } sensor_type_;

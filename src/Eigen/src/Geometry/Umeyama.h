@@ -16,7 +16,7 @@
 // * Eigen/SVD
 // * Eigen/Array
 
-namespace Eigen { 
+namespace Eigen {
 
 #ifndef EIGEN_PARSED_BY_DOXYGEN
 
@@ -29,22 +29,22 @@ namespace internal {
 // Different means here different alignment and parameters but the same underlying
 // real scalar type.
 template<typename MatrixType, typename OtherMatrixType>
-struct umeyama_transform_matrix_type
-{
+struct umeyama_transform_matrix_type {
   enum {
-    MinRowsAtCompileTime = EIGEN_SIZE_MIN_PREFER_DYNAMIC(MatrixType::RowsAtCompileTime, OtherMatrixType::RowsAtCompileTime),
+    MinRowsAtCompileTime =
+    EIGEN_SIZE_MIN_PREFER_DYNAMIC(MatrixType::RowsAtCompileTime, OtherMatrixType::RowsAtCompileTime),
 
     // When possible we want to choose some small fixed size value since the result
     // is likely to fit on the stack. So here, EIGEN_SIZE_MIN_PREFER_DYNAMIC is not what we want.
-    HomogeneousDimension = int(MinRowsAtCompileTime) == Dynamic ? Dynamic : int(MinRowsAtCompileTime)+1
+    HomogeneousDimension = int(MinRowsAtCompileTime) == Dynamic ? Dynamic : int(MinRowsAtCompileTime) + 1
   };
 
   typedef Matrix<typename traits<MatrixType>::Scalar,
-    HomogeneousDimension,
-    HomogeneousDimension,
-    AutoAlign | (traits<MatrixType>::Flags & RowMajorBit ? RowMajor : ColMajor),
-    HomogeneousDimension,
-    HomogeneousDimension
+                 HomogeneousDimension,
+                 HomogeneousDimension,
+                 AutoAlign | (traits<MatrixType>::Flags & RowMajorBit ? RowMajor : ColMajor),
+                 HomogeneousDimension,
+                 HomogeneousDimension
   > type;
 };
 
@@ -90,10 +90,9 @@ struct umeyama_transform_matrix_type
 * minimizing the resudiual above. This transformation is always returned as an 
 * Eigen::Matrix.
 */
-template <typename Derived, typename OtherDerived>
+template<typename Derived, typename OtherDerived>
 typename internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type
-umeyama(const MatrixBase<Derived>& src, const MatrixBase<OtherDerived>& dst, bool with_scaling = true)
-{
+umeyama(const MatrixBase<Derived> &src, const MatrixBase<OtherDerived> &dst, bool with_scaling = true) {
   typedef typename internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type TransformationMatrixType;
   typedef typename internal::traits<TransformationMatrixType>::Scalar Scalar;
   typedef typename NumTraits<Scalar>::Real RealScalar;
@@ -101,7 +100,7 @@ umeyama(const MatrixBase<Derived>& src, const MatrixBase<OtherDerived>& dst, boo
 
   EIGEN_STATIC_ASSERT(!NumTraits<Scalar>::IsComplex, NUMERIC_TYPE_MUST_BE_REAL)
   EIGEN_STATIC_ASSERT((internal::is_same<Scalar, typename internal::traits<OtherDerived>::Scalar>::value),
-    YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY)
+                      YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY)
 
   enum { Dimension = EIGEN_SIZE_MIN_PREFER_DYNAMIC(Derived::RowsAtCompileTime, OtherDerived::RowsAtCompileTime) };
 
@@ -132,41 +131,40 @@ umeyama(const MatrixBase<Derived>& src, const MatrixBase<OtherDerived>& dst, boo
   JacobiSVD<MatrixType> svd(sigma, ComputeFullU | ComputeFullV);
 
   // Initialize the resulting transformation with an identity matrix...
-  TransformationMatrixType Rt = TransformationMatrixType::Identity(m+1,m+1);
+  TransformationMatrixType Rt = TransformationMatrixType::Identity(m + 1, m + 1);
 
   // Eq. (39)
   VectorType S = VectorType::Ones(m);
-  if (sigma.determinant()<Scalar(0)) S(m-1) = Scalar(-1);
+  if (sigma.determinant() < Scalar(0)) S(m - 1) = Scalar(-1);
 
   // Eq. (40) and (43)
-  const VectorType& d = svd.singularValues();
-  Index rank = 0; for (Index i=0; i<m; ++i) if (!internal::isMuchSmallerThan(d.coeff(i),d.coeff(0))) ++rank;
-  if (rank == m-1) {
-    if ( svd.matrixU().determinant() * svd.matrixV().determinant() > Scalar(0) ) {
-      Rt.block(0,0,m,m).noalias() = svd.matrixU()*svd.matrixV().transpose();
+  const VectorType &d = svd.singularValues();
+  Index rank = 0;
+  for (Index i = 0; i < m; ++i) if (!internal::isMuchSmallerThan(d.coeff(i), d.coeff(0))) ++rank;
+  if (rank == m - 1) {
+    if (svd.matrixU().determinant() * svd.matrixV().determinant() > Scalar(0)) {
+      Rt.block(0, 0, m, m).noalias() = svd.matrixU() * svd.matrixV().transpose();
     } else {
-      const Scalar s = S(m-1); S(m-1) = Scalar(-1);
-      Rt.block(0,0,m,m).noalias() = svd.matrixU() * S.asDiagonal() * svd.matrixV().transpose();
-      S(m-1) = s;
+      const Scalar s = S(m - 1);
+      S(m - 1) = Scalar(-1);
+      Rt.block(0, 0, m, m).noalias() = svd.matrixU() * S.asDiagonal() * svd.matrixV().transpose();
+      S(m - 1) = s;
     }
   } else {
-    Rt.block(0,0,m,m).noalias() = svd.matrixU() * S.asDiagonal() * svd.matrixV().transpose();
+    Rt.block(0, 0, m, m).noalias() = svd.matrixU() * S.asDiagonal() * svd.matrixV().transpose();
   }
 
-  if (with_scaling)
-  {
+  if (with_scaling) {
     // Eq. (42)
-    const Scalar c = Scalar(1)/src_var * svd.singularValues().dot(S);
+    const Scalar c = Scalar(1) / src_var * svd.singularValues().dot(S);
 
     // Eq. (41)
     Rt.col(m).head(m) = dst_mean;
-    Rt.col(m).head(m).noalias() -= c*Rt.topLeftCorner(m,m)*src_mean;
-    Rt.block(0,0,m,m) *= c;
-  }
-  else
-  {
+    Rt.col(m).head(m).noalias() -= c * Rt.topLeftCorner(m, m) * src_mean;
+    Rt.block(0, 0, m, m) *= c;
+  } else {
     Rt.col(m).head(m) = dst_mean;
-    Rt.col(m).head(m).noalias() -= Rt.topLeftCorner(m,m)*src_mean;
+    Rt.col(m).head(m).noalias() -= Rt.topLeftCorner(m, m) * src_mean;
   }
 
   return Rt;

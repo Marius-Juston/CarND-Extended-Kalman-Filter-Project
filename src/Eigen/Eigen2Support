@@ -52,7 +52,6 @@
 #include "src/Eigen2Support/Minor.h"
 #include "src/Eigen2Support/MathFunctions.h"
 
-
 #include "src/Core/util/ReenableStupidWarnings.h"
 
 // Eigen2 used to include iostream

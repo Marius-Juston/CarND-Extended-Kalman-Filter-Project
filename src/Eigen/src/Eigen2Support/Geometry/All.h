@@ -20,7 +20,6 @@
 #include "ParametrizedLine.h"
 #endif
 
-
 #define RotationBase eigen2_RotationBase
 #define Rotation2D eigen2_Rotation2D
 #define Rotation2Df eigen2_Rotation2Df

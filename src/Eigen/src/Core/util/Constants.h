@@ -150,8 +150,8 @@ const unsigned int NestByRefBit = 0x100;
 
 // list of flags that are inherited by default
 const unsigned int HereditaryBits = RowMajorBit
-                                  | EvalBeforeNestingBit
-                                  | EvalBeforeAssigningBit;
+    | EvalBeforeNestingBit
+    | EvalBeforeAssigningBit;
 
 /** \defgroup enums Enumerations
   * \ingroup Core_Module
@@ -164,34 +164,34 @@ const unsigned int HereditaryBits = RowMajorBit
   * MatrixBase::selfadjointView() and MatrixBase::triangularView(). */
 enum UpLoType {
   /** View matrix as a lower triangular matrix. */
-  Lower=0x1,                      
+  Lower = 0x1,
   /** View matrix as an upper triangular matrix. */
-  Upper=0x2,                      
+  Upper = 0x2,
   /** %Matrix has ones on the diagonal; to be used in combination with #Lower or #Upper. */
-  UnitDiag=0x4, 
+  UnitDiag = 0x4,
   /** %Matrix has zeros on the diagonal; to be used in combination with #Lower or #Upper. */
-  ZeroDiag=0x8,
+  ZeroDiag = 0x8,
   /** View matrix as a lower triangular matrix with ones on the diagonal. */
-  UnitLower=UnitDiag|Lower, 
+  UnitLower = UnitDiag | Lower,
   /** View matrix as an upper triangular matrix with ones on the diagonal. */
-  UnitUpper=UnitDiag|Upper,
+  UnitUpper = UnitDiag | Upper,
   /** View matrix as a lower triangular matrix with zeros on the diagonal. */
-  StrictlyLower=ZeroDiag|Lower, 
+  StrictlyLower = ZeroDiag | Lower,
   /** View matrix as an upper triangular matrix with zeros on the diagonal. */
-  StrictlyUpper=ZeroDiag|Upper,
+  StrictlyUpper = ZeroDiag | Upper,
   /** Used in BandMatrix and SelfAdjointView to indicate that the matrix is self-adjoint. */
-  SelfAdjoint=0x10,
+  SelfAdjoint = 0x10,
   /** Used to support symmetric, non-selfadjoint, complex matrices. */
-  Symmetric=0x20
+  Symmetric = 0x20
 };
 
 /** \ingroup enums
   * Enum for indicating whether an object is aligned or not. */
 enum AlignmentType {
   /** Object is not correctly aligned for vectorization. */
-  Unaligned=0, 
+  Unaligned = 0,
   /** Object is aligned for vectorization. */
-  Aligned=1 
+  Aligned = 1
 };
 
 /** \ingroup enums
@@ -203,16 +203,16 @@ enum CornerType { TopLeft, TopRight, BottomLeft, BottomRight };
 /** \ingroup enums
   * Enum containing possible values for the \p Direction parameter of
   * Reverse, PartialReduxExpr and VectorwiseOp. */
-enum DirectionType { 
+enum DirectionType {
   /** For Reverse, all columns are reversed; 
     * for PartialReduxExpr and VectorwiseOp, act on columns. */
-  Vertical, 
+  Vertical,
   /** For Reverse, all rows are reversed; 
     * for PartialReduxExpr and VectorwiseOp, act on rows. */
-  Horizontal, 
+  Horizontal,
   /** For Reverse, both rows and columns are reversed; 
     * not used for PartialReduxExpr and VectorwiseOp. */
-  BothDirections 
+  BothDirections
 };
 
 /** \internal \ingroup enums
@@ -274,9 +274,9 @@ enum StorageOptions {
   * Enum for specifying whether to apply or solve on the left or right. */
 enum SideType {
   /** Apply transformation on the left. */
-  OnTheLeft = 1,  
+  OnTheLeft = 1,
   /** Apply transformation on the right. */
-  OnTheRight = 2  
+  OnTheRight = 2
 };
 
 /* the following used to be written as:
@@ -291,14 +291,14 @@ enum SideType {
  * and we do not know how to get rid of them (bug 450).
  */
 
-enum NoChange_t   { NoChange };
+enum NoChange_t { NoChange };
 enum Sequential_t { Sequential };
-enum Default_t    { Default };
+enum Default_t { Default };
 
 /** \internal \ingroup enums
   * Used in AmbiVector. */
 enum {
-  IsDense         = 0,
+  IsDense = 0,
   IsSparse
 };
 
@@ -307,11 +307,11 @@ enum {
   * which accessors should be provided. */
 enum AccessorLevels {
   /** Read-only access via a member function. */
-  ReadOnlyAccessors, 
+  ReadOnlyAccessors,
   /** Read/write access via member functions. */
-  WriteAccessors, 
+  WriteAccessors,
   /** Direct read-only access to the coefficients. */
-  DirectAccessors, 
+  DirectAccessors,
   /** Direct read/write access to the coefficients. */
   DirectWriteAccessors
 };
@@ -320,20 +320,20 @@ enum AccessorLevels {
   * Enum with options to give to various decompositions. */
 enum DecompositionOptions {
   /** \internal Not used (meant for LDLT?). */
-  Pivoting            = 0x01, 
+  Pivoting = 0x01,
   /** \internal Not used (meant for LDLT?). */
-  NoPivoting          = 0x02, 
+  NoPivoting = 0x02,
   /** Used in JacobiSVD to indicate that the square matrix U is to be computed. */
-  ComputeFullU        = 0x04,
+  ComputeFullU = 0x04,
   /** Used in JacobiSVD to indicate that the thin matrix U is to be computed. */
-  ComputeThinU        = 0x08,
+  ComputeThinU = 0x08,
   /** Used in JacobiSVD to indicate that the square matrix V is to be computed. */
-  ComputeFullV        = 0x10,
+  ComputeFullV = 0x10,
   /** Used in JacobiSVD to indicate that the thin matrix V is to be computed. */
-  ComputeThinV        = 0x20,
+  ComputeThinV = 0x20,
   /** Used in SelfAdjointEigenSolver and GeneralizedSelfAdjointEigenSolver to specify
     * that only the eigenvalues are to be computed and not the eigenvectors. */
-  EigenvaluesOnly     = 0x40,
+  EigenvaluesOnly = 0x40,
   /** Used in SelfAdjointEigenSolver and GeneralizedSelfAdjointEigenSolver to specify
     * that both the eigenvalues and the eigenvectors are to be computed. */
   ComputeEigenvectors = 0x80,
@@ -341,13 +341,13 @@ enum DecompositionOptions {
   EigVecMask = EigenvaluesOnly | ComputeEigenvectors,
   /** Used in GeneralizedSelfAdjointEigenSolver to indicate that it should
     * solve the generalized eigenproblem \f$ Ax = \lambda B x \f$. */
-  Ax_lBx              = 0x100,
+  Ax_lBx = 0x100,
   /** Used in GeneralizedSelfAdjointEigenSolver to indicate that it should
     * solve the generalized eigenproblem \f$ ABx = \lambda x \f$. */
-  ABx_lx              = 0x200,
+  ABx_lx = 0x200,
   /** Used in GeneralizedSelfAdjointEigenSolver to indicate that it should
     * solve the generalized eigenproblem \f$ BAx = \lambda x \f$. */
-  BAx_lx              = 0x400,
+  BAx_lx = 0x400,
   /** \internal */
   GenEigMask = Ax_lBx | ABx_lx | BAx_lx
 };
@@ -373,9 +373,9 @@ enum QRPreconditioners {
   * Enum for reporting the status of a computation. */
 enum ComputationInfo {
   /** Computation was successful. */
-  Success = 0,        
+  Success = 0,
   /** The provided data did not satisfy the prerequisites. */
-  NumericalIssue = 1, 
+  NumericalIssue = 1,
   /** Iterative procedure did not converge. */
   NoConvergence = 2,
   /** The inputs are invalid, or the algorithm has been improperly called.
@@ -388,41 +388,47 @@ enum ComputationInfo {
   * \sa Transform, Hyperplane::transform(). */
 enum TransformTraits {
   /** Transformation is an isometry. */
-  Isometry      = 0x1,
+  Isometry = 0x1,
   /** Transformation is an affine transformation stored as a (Dim+1)^2 matrix whose last row is 
     * assumed to be [0 ... 0 1]. */
-  Affine        = 0x2,
+  Affine = 0x2,
   /** Transformation is an affine transformation stored as a (Dim) x (Dim+1) matrix. */
   AffineCompact = 0x10 | Affine,
   /** Transformation is a general projective transformation stored as a (Dim+1)^2 matrix. */
-  Projective    = 0x20
+  Projective = 0x20
 };
 
 /** \internal \ingroup enums
   * Enum used to choose between implementation depending on the computer architecture. */
-namespace Architecture
-{
-  enum Type {
-    Generic = 0x0,
-    SSE = 0x1,
-    AltiVec = 0x2,
+namespace Architecture {
+enum Type {
+  Generic = 0x0,
+  SSE = 0x1,
+  AltiVec = 0x2,
 #if defined EIGEN_VECTORIZE_SSE
-    Target = SSE
+  Target = SSE
 #elif defined EIGEN_VECTORIZE_ALTIVEC
-    Target = AltiVec
+  Target = AltiVec
 #else
-    Target = Generic
+  Target = Generic
 #endif
-  };
+};
 }
 
 /** \internal \ingroup enums
   * Enum used as template parameter in GeneralProduct. */
-enum ProductImplType { CoeffBasedProductMode, LazyCoeffBasedProductMode, OuterProduct, InnerProduct, GemvProduct, GemmProduct };
+enum ProductImplType {
+  CoeffBasedProductMode,
+  LazyCoeffBasedProductMode,
+  OuterProduct,
+  InnerProduct,
+  GemvProduct,
+  GemmProduct
+};
 
 /** \internal \ingroup enums
   * Enum used in experimental parallel implementation. */
-enum Action {GetAction, SetAction};
+enum Action { GetAction, SetAction };
 
 /** The type used to identify a dense storage. */
 struct Dense {};
@@ -434,16 +440,16 @@ struct MatrixXpr {};
 struct ArrayXpr {};
 
 namespace internal {
-  /** \internal
-  * Constants for comparison functors
-  */
-  enum ComparisonName {
-    cmp_EQ = 0,
-    cmp_LT = 1,
-    cmp_LE = 2,
-    cmp_UNORD = 3,
-    cmp_NEQ = 4
-  };
+/** \internal
+* Constants for comparison functors
+*/
+enum ComparisonName {
+  cmp_EQ = 0,
+  cmp_LT = 1,
+  cmp_LE = 2,
+  cmp_UNORD = 3,
+  cmp_NEQ = 4
+};
 }
 
 } // end namespace Eigen

@@ -33,7 +33,7 @@
 #ifndef EIGEN_GENERAL_MATRIX_VECTOR_MKL_H
 #define EIGEN_GENERAL_MATRIX_VECTOR_MKL_H
 
-namespace Eigen { 
+namespace Eigen {
 
 namespace internal {
 
@@ -48,7 +48,8 @@ namespace internal {
 
 template<typename Index, typename LhsScalar, int LhsStorageOrder, bool ConjugateLhs, typename RhsScalar, bool ConjugateRhs>
 struct general_matrix_vector_product_gemv :
-  general_matrix_vector_product<Index,LhsScalar,LhsStorageOrder,ConjugateLhs,RhsScalar,ConjugateRhs,BuiltIn> {};
+    general_matrix_vector_product<Index, LhsScalar, LhsStorageOrder, ConjugateLhs, RhsScalar, ConjugateRhs, BuiltIn> {
+};
 
 #define EIGEN_MKL_GEMV_SPECIALIZE(Scalar) \
 template<typename Index, bool ConjugateLhs, bool ConjugateRhs> \
@@ -86,7 +87,7 @@ EIGEN_MKL_GEMV_SPECIALIZE(float)
 EIGEN_MKL_GEMV_SPECIALIZE(dcomplex)
 EIGEN_MKL_GEMV_SPECIALIZE(scomplex)
 
-#define EIGEN_MKL_GEMV_SPECIALIZATION(EIGTYPE,MKLTYPE,MKLPREFIX) \
+#define EIGEN_MKL_GEMV_SPECIALIZATION(EIGTYPE, MKLTYPE, MKLPREFIX) \
 template<typename Index, int LhsStorageOrder, bool ConjugateLhs, bool ConjugateRhs> \
 struct general_matrix_vector_product_gemv<Index,EIGTYPE,LhsStorageOrder,ConjugateLhs,EIGTYPE,ConjugateRhs> \
 { \
@@ -119,10 +120,10 @@ static void run( \
 }\
 };
 
-EIGEN_MKL_GEMV_SPECIALIZATION(double,   double,        d)
-EIGEN_MKL_GEMV_SPECIALIZATION(float,    float,         s)
+EIGEN_MKL_GEMV_SPECIALIZATION(double, double, d)
+EIGEN_MKL_GEMV_SPECIALIZATION(float, float, s)
 EIGEN_MKL_GEMV_SPECIALIZATION(dcomplex, MKL_Complex16, z)
-EIGEN_MKL_GEMV_SPECIALIZATION(scomplex, MKL_Complex8,  c)
+EIGEN_MKL_GEMV_SPECIALIZATION(scomplex, MKL_Complex8, c)
 
 } // end namespase internal
 

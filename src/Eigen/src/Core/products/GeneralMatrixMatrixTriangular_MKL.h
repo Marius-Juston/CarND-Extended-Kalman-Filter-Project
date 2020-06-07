@@ -33,14 +33,15 @@
 #ifndef EIGEN_GENERAL_MATRIX_MATRIX_TRIANGULAR_MKL_H
 #define EIGEN_GENERAL_MATRIX_MATRIX_TRIANGULAR_MKL_H
 
-namespace Eigen { 
+namespace Eigen {
 
 namespace internal {
 
-template <typename Index, typename Scalar, int AStorageOrder, bool ConjugateA, int ResStorageOrder, int  UpLo>
+template<typename Index, typename Scalar, int AStorageOrder, bool ConjugateA, int ResStorageOrder, int UpLo>
 struct general_matrix_matrix_rankupdate :
-       general_matrix_matrix_triangular_product<
-         Index,Scalar,AStorageOrder,ConjugateA,Scalar,AStorageOrder,ConjugateA,ResStorageOrder,UpLo,BuiltIn> {};
+    general_matrix_matrix_triangular_product<
+        Index, Scalar, AStorageOrder, ConjugateA, Scalar, AStorageOrder, ConjugateA, ResStorageOrder, UpLo, BuiltIn> {
+};
 
 
 // try to go to BLAS specialization
@@ -131,9 +132,8 @@ struct general_matrix_matrix_rankupdate<Index,EIGTYPE,AStorageOrder,ConjugateA,C
   } \
 };
 
-
 EIGEN_MKL_RANKUPDATE_R(double, double, dsyrk)
-EIGEN_MKL_RANKUPDATE_R(float,  float,  ssyrk)
+EIGEN_MKL_RANKUPDATE_R(float, float, ssyrk)
 
 //EIGEN_MKL_RANKUPDATE_C(dcomplex, MKL_Complex16, double, zherk)
 //EIGEN_MKL_RANKUPDATE_C(scomplex, MKL_Complex8,  double, cherk)

@@ -45,7 +45,7 @@ namespace std \
 }
 
 // check whether we really need the std::deque specialization
-#if !(defined(_GLIBCXX_DEQUE) && (!EIGEN_GNUC_AT_LEAST(4,1))) /* Note that before gcc-4.1 we already have: std::deque::resize(size_type,const T&). */
+#if !(defined(_GLIBCXX_DEQUE) && (!EIGEN_GNUC_AT_LEAST(4, 1))) /* Note that before gcc-4.1 we already have: std::deque::resize(size_type,const T&). */
 
 namespace std {
 
@@ -68,17 +68,15 @@ namespace std {
       return *this;  \
     }
 
-  template<typename T>
-  class deque<T,EIGEN_ALIGNED_ALLOCATOR<T> >
+template<typename T>
+class deque<T, EIGEN_ALIGNED_ALLOCATOR<T> >
     : public deque<EIGEN_WORKAROUND_MSVC_STL_SUPPORT(T),
-                   Eigen::aligned_allocator_indirection<EIGEN_WORKAROUND_MSVC_STL_SUPPORT(T)> >
-{
+                   Eigen::aligned_allocator_indirection<EIGEN_WORKAROUND_MSVC_STL_SUPPORT(T)> > {
   typedef deque<EIGEN_WORKAROUND_MSVC_STL_SUPPORT(T),
                 Eigen::aligned_allocator_indirection<EIGEN_WORKAROUND_MSVC_STL_SUPPORT(T)> > deque_base;
-  EIGEN_STD_DEQUE_SPECIALIZATION_BODY
+ EIGEN_STD_DEQUE_SPECIALIZATION_BODY
 
-  void resize(size_type new_size)
-  { resize(new_size, T()); }
+  void resize(size_type new_size) { resize(new_size, T()); }
 
 #if defined(_DEQUE_)
   // workaround MSVC std::deque implementation
@@ -98,7 +96,7 @@ namespace std {
   { return deque_base::insert(position,x); }
   void insert(const_iterator position, size_type new_size, const value_type& x)
   { deque_base::insert(position, new_size, x); }
-#elif defined(_GLIBCXX_DEQUE) && EIGEN_GNUC_AT_LEAST(4,2)
+#elif defined(_GLIBCXX_DEQUE) && EIGEN_GNUC_AT_LEAST(4, 2)
   // workaround GCC std::deque implementation
   void resize(size_type new_size, const value_type& x)
   {
@@ -110,15 +108,14 @@ namespace std {
 #else
   // either GCC 4.1 or non-GCC
   // default implementation which should always work.
-  void resize(size_type new_size, const value_type& x)
-  {
+  void resize(size_type new_size, const value_type &x) {
     if (new_size < deque_base::size())
       deque_base::erase(deque_base::begin() + new_size, deque_base::end());
     else if (new_size > deque_base::size())
       deque_base::insert(deque_base::end(), new_size - deque_base::size(), x);
   }
 #endif
-  };
+};
 }
 
 #endif // check whether specialization is actually required

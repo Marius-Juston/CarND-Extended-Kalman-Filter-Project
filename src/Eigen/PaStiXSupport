@@ -40,7 +40,6 @@ extern "C" {
 
 #include "src/PaStiXSupport/PaStiXSupport.h"
 
-
 #include "src/Core/util/ReenableStupidWarnings.h"
 
 #endif // EIGEN_PASTIXSUPPORT_MODULE_H

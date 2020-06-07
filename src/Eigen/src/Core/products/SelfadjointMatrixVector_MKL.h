@@ -33,7 +33,7 @@
 #ifndef EIGEN_SELFADJOINT_MATRIX_VECTOR_MKL_H
 #define EIGEN_SELFADJOINT_MATRIX_VECTOR_MKL_H
 
-namespace Eigen { 
+namespace Eigen {
 
 namespace internal {
 
@@ -45,7 +45,8 @@ namespace internal {
 
 template<typename Scalar, typename Index, int StorageOrder, int UpLo, bool ConjugateLhs, bool ConjugateRhs>
 struct selfadjoint_matrix_vector_product_symv :
-  selfadjoint_matrix_vector_product<Scalar,Index,StorageOrder,UpLo,ConjugateLhs,ConjugateRhs,BuiltIn> {};
+    selfadjoint_matrix_vector_product<Scalar, Index, StorageOrder, UpLo, ConjugateLhs, ConjugateRhs, BuiltIn> {
+};
 
 #define EIGEN_MKL_SYMV_SPECIALIZE(Scalar) \
 template<typename Index, int StorageOrder, int UpLo, bool ConjugateLhs, bool ConjugateRhs> \
@@ -71,7 +72,7 @@ EIGEN_MKL_SYMV_SPECIALIZE(float)
 EIGEN_MKL_SYMV_SPECIALIZE(dcomplex)
 EIGEN_MKL_SYMV_SPECIALIZE(scomplex)
 
-#define EIGEN_MKL_SYMV_SPECIALIZATION(EIGTYPE,MKLTYPE,MKLFUNC) \
+#define EIGEN_MKL_SYMV_SPECIALIZATION(EIGTYPE, MKLTYPE, MKLFUNC) \
 template<typename Index, int StorageOrder, int UpLo, bool ConjugateLhs, bool ConjugateRhs> \
 struct selfadjoint_matrix_vector_product_symv<EIGTYPE,Index,StorageOrder,UpLo,ConjugateLhs,ConjugateRhs> \
 { \
@@ -102,10 +103,10 @@ const EIGTYPE* _rhs, Index rhsIncr, EIGTYPE* res, EIGTYPE alpha) \
 }\
 };
 
-EIGEN_MKL_SYMV_SPECIALIZATION(double,   double,        dsymv)
-EIGEN_MKL_SYMV_SPECIALIZATION(float,    float,         ssymv)
+EIGEN_MKL_SYMV_SPECIALIZATION(double, double, dsymv)
+EIGEN_MKL_SYMV_SPECIALIZATION(float, float, ssymv)
 EIGEN_MKL_SYMV_SPECIALIZATION(dcomplex, MKL_Complex16, zhemv)
-EIGEN_MKL_SYMV_SPECIALIZATION(scomplex, MKL_Complex8,  chemv)
+EIGEN_MKL_SYMV_SPECIALIZATION(scomplex, MKL_Complex8, chemv)
 
 } // end namespace internal
 

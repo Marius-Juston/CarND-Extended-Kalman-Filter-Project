@@ -36,11 +36,11 @@
 
 #include "../Core/util/MKL_support.h"
 
-namespace Eigen { 
+namespace Eigen {
 
-  namespace internal {
+namespace internal {
 
-    /** \internal Specialization for the data types supported by MKL */
+/** \internal Specialization for the data types supported by MKL */
 
 #define EIGEN_MKL_QR_NOPIV(EIGTYPE, MKLTYPE, MKLPREFIX) \
 template<typename MatrixQR, typename HCoeffs> \
