@@ -46,6 +46,9 @@ class FusionEKF {
   Eigen::MatrixXd Hj_;
   double noise_ax;
   double noise_ay;
+
+  void calculateFMatrix(double dt);
+  void calculateQMatrix(double dt);
 };
 
 #endif // FusionEKF_H_

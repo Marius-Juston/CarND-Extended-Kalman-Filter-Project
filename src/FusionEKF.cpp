@@ -133,3 +133,21 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   cout << "x_ = " << ekf_.x_ << endl;
   cout << "P_ = " << ekf_.P_ << endl;
 }
+
+void FusionEKF::calculateFMatrix(double dt) {
+  ekf_.F_ << 1, 0, dt, 0,
+      0, 1, 0, dt,
+      0, 0, 1, 0,
+      0, 0, 0, 1;
+}
+void FusionEKF::calculateQMatrix(double dt) {
+  double dt_fourth = (dt * dt * dt * dt) / 4.0;
+  double dt_third = (dt * dt * dt) / 2.0;
+  double dt_square = (dt * dt);
+
+  ekf_.Q_ << dt_fourth * noise_ax, 0, dt_third * noise_ax, 0,
+      0, dt_fourth * noise_ay, 0, dt_third * noise_ay,
+      dt_third * noise_ax, 0, dt_square * noise_ax, 0,
+      0, dt_third * noise_ay, 0, dt_square * noise_ay;
+
+}
