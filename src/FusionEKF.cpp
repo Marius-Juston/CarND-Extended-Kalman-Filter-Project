@@ -58,6 +58,10 @@ FusionEKF::FusionEKF() {
       0, 0, 0, 0,
       0, 0, 0, 0;
 
+  H_laser_ = MatrixXd(2, 4);
+  H_laser_ << 1, 0, 0, 0,
+      0, 1, 0, 0;
+
   noise_ax = 9;
   noise_ay = 9;
 }
@@ -133,7 +137,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   } else {
     // TODO: Laser updates
-
+    ekf_.H_ = H_laser_;
+    ekf_.R_= R_laser_;
+    ekf_.Update(measurement_pack.raw_measurements_);
   }
 
   // print the output
